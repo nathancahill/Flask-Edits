@@ -6,7 +6,7 @@ Clients blowing up your phone to change some copy on the ```/about``` page?
 
 Enter __Flask-Edits__. Mark sections of your templates with ```{% editable %}``` and their content is exposed in a slick admin panel. Never worry about tweaking copy again.
 
-![Screenshot](http://i.imgur.com/XQYJbdQ.png)
+![Screenshot](http://i.imgur.com/7vCTJSN.png)
 
 #### Usage
 
