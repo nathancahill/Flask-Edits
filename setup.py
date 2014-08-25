@@ -8,5 +8,6 @@ setup(
     url='https://pypi.python.org/pypi/Flask-Edits',
     author='Nathan Cahill',
     author_email='nathan@nathancahill.com',
+    description='Editable Content in Flask',
     long_description=open('README').read(),
 )
