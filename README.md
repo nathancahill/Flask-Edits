@@ -10,8 +10,6 @@ Enter __Flask-Edits__. Mark sections of your templates with ```{% editable %}```
 
 #### Installation
 
-Install using pip:
-
 ```
 $ pip install flask-edits
 ```

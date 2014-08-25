@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='Flask-Edits',
-    version='0.2',
+    version='0.3',
     packages=['flask_edits',],
     license='BSD',
     url='https://pypi.python.org/pypi/Flask-Edits',

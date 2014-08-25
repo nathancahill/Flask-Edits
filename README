@@ -17,8 +17,6 @@ Never worry about tweaking copy again.
 Installation
 ^^^^^^^^^^^^
 
-Install using pip:
-
 ::
 
     $ pip install flask-edits
