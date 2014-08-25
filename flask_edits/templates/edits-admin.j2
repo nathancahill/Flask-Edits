@@ -11,6 +11,7 @@
 
     <link href="{{ url_for('edits.static', filename='bootstrap/css/bootstrap.min.css')}}" rel="stylesheet" />
     <link href="{{ url_for('edits.static', filename='bootstrap/css/navbar.css')}}" rel="stylesheet" />
+    <link href="{{ url_for('edits.static', filename='bootstrap-switch/css/bootstrap-switch.min.css') }}" rel="stylesheet">
 
     {% if summernote %}
     <link href="{{ url_for('edits.static', filename='summernote/summernote.css') }}" rel="stylesheet" />
@@ -33,6 +34,11 @@
           <div class="navbar-header">
             <a class="navbar-brand" href="#">Flask-Edits</a>
           </div>
+          <div class="pull-right" style="margin-top: 10px;">
+              <label style="font-weight: normal; vertical-align: bottom">Preview</label>
+              &nbsp;&nbsp;
+              <input type="checkbox" name="mode" {% if preview %}checked{% endif %} />
+            </div>
         </div>
       </div>
 
@@ -63,7 +69,7 @@
                       <div class="summernote" id="{{ key }}">{% if section.edited is none %}{{ section.original }}{% else %}{{ section.edited }}{% endif %}</div>
                       <input type="hidden" name="{{ key }}" value="" />
                     {% else %}
-                      <textarea class="form-control" rows="4" name="{{ key }}" oninput="unsaved = true" onpropertychange="unsaved = true">{% if section.edited is none %}{{ section.original }}{% else %}{{ section.edited }}{% endif %}</textarea>
+                      <textarea class="form-control" rows="4" name="{{ key }}">{% if section.edited is none %}{{ section.original }}{% else %}{{ section.edited }}{% endif %}</textarea>
                     {% endif %}
                   </div>
                 {% endfor %}
@@ -82,8 +88,10 @@
     </div>
   </body>
 
-  {% if summernote %}
   <script type="text/javascript" src="//code.jquery.com/jquery-1.9.1.min.js"></script> 
+  <script type="text/javascript" src="{{ url_for('edits.static', filename='bootstrap-switch/js/bootstrap-switch.min.js') }}"></script>
+
+  {% if summernote %}
   <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script> 
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/codemirror.min.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/mode/xml/xml.min.js"></script>
@@ -92,8 +100,16 @@
   {% endif %}
 
   <script>
-    {% if summernote %}
     $(document).ready(function() {
+      $('[name="mode"]').bootstrapSwitch({
+        onText: 'On',
+        offText: 'Off',
+        onSwitchChange: function(e, state) {
+          $.post("{{ url_for('edits.preview') }}", {state: state});
+        }
+      });
+
+      {% if summernote %}
       $('.summernote').summernote({
         height: 100,
         toolbar: [
@@ -101,32 +117,17 @@
           ['insert', ['link', 'hr']],
           ['layount', ['ul', 'ol']],
           ['misc', ['codeview']]
-        ],
-        onChange: function() {
-          window.unsaved = true;
-        }
+        ]
       });
+      {% endif %}
     });
-    {% endif %}
 
+    {% if summernote %}
     function save() {
-      {% if summernote %}
       $('.summernote').each(function() {
         $('input[name=' + $(this).attr('id') + ']').val($(this).code());
       });
-      {% endif %}
-
-      unsaved = false;
     }
-
-    var unsaved = false;
-
-    function unloadPage() { 
-        if (unsaved) {
-            return "You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?";
-        }
-    }
-
-    window.onbeforeunload = unloadPage;
+    {% endif %}
   </script>
 </html>

@@ -5,6 +5,7 @@ import os
 import json
 
 import jinja2
+from jinja2.environment import copy_cache
 
 from flask import (
     Blueprint,
@@ -28,7 +29,28 @@ def index(page):
     else:
         page = None
 
-    return render_template('edits-admin.j2', edits=_db, page=page, summernote=current_app.config['EDITS_SUMMERNOTE'])
+    return render_template('edits-admin.j2',
+                           edits=_db,
+                           page=page,
+                           summernote=current_app.config['EDITS_SUMMERNOTE'],
+                           preview=current_app.jinja_env.edits_preview)
+
+@edits.route('/preview', methods=['POST'])
+def preview():
+    if request.form.get('state') == 'true':
+        preview = True
+        cache = None
+    else:
+        preview = False
+        cache = copy_cache(current_app.jinja_env.edits_cache)
+
+    current_app.jinja_env.edits_preview = preview
+    current_app.jinja_env.cache = cache
+
+    if current_app.jinja_env.cache:
+        current_app.jinja_env.cache.clear()
+
+    return ''
 
 @edits.route('/save', methods=['POST'])
 def save():
@@ -45,7 +67,8 @@ def save():
 
             _db[page][field]['edited'] = value
 
-    current_app.jinja_env.cache.clear()
+    if current_app.jinja_env.cache:
+        current_app.jinja_env.cache.clear()
 
     with open(current_app.config['EDITS_PATH'], 'w') as f:
         f.write(json.dumps(_db, indent=4))

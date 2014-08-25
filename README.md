@@ -8,6 +8,14 @@ Enter __Flask-Edits__. Mark sections of your templates with ```{% editable %}```
 
 ![Screenshot](http://i.imgur.com/7vCTJSN.png)
 
+#### Installation
+
+Install using pip:
+
+```
+$ pip install flask-edits
+```
+
 #### Usage
 
 ```
@@ -38,7 +46,7 @@ There is no automatic detection of editable sections (yet). You have to visit th
 
 #### Admin
 
-The Flask-Edits admin view is exposed by default at ```/edits```. This can be changed in the configuration:
+The Flask-Edits admin view is exposed by default at ```/edits```. The base URL can be changed in the configuration:
 
 ```
 app.config['EDITS_URL'] = '/edits'
@@ -58,16 +66,27 @@ The [Summernote](http://hackerwins.github.io/summernote/) HTML editor is include
 app.config['EDITS_SUMMERNOTE'] = True
 ```
 
-When content is saved it instantly updates the Jinja context and writes to the JSON file on the server.
+When a page is saved it instantly updates the Jinja context and writes to the JSON file on the server.
 
 Within a page, multiple sections with the same name will only show up once in the admin panel, but the edits will be applied to each section.
 
 Clearing a section will revert it to the original content in the template.
 
+#### Previews
+
+Preview mode is on by default. Edits will not show up on pages unless ```?preview=true``` is passed in the URL. This allows for easy editing before content is live. Toggle the preview mode in the admin panel. If previews are turned off, edits become live as they are saved.
+
+Preview mode can be toggled in the configuration. To turn off previews by default:
+
+```
+app.config['EDITS_PREVIEW'] = False
+```
+
+Turning off previews is recommended for use in production.
+
 #### Roadmap
 
 * Automatically register editable sections
 * Jinja2 content with context evaluation
-* Preview edits
 * Multiple database backends
 * In-place page editing

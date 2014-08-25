@@ -1,6 +1,9 @@
 """Flask-Edits
 """
 
+from flask import request
+from jinja2.environment import copy_cache
+
 from collections import OrderedDict
 import json
 import os
@@ -25,6 +28,7 @@ class Edits(object):
                 Flask application instance
         """
         app.config.setdefault('EDITS_URL', '/edits')
+        app.config.setdefault('EDITS_PREVIEW', True)
         app.config.setdefault('EDITS_SUMMERNOTE', False)
 
         if 'EDITS_PATH' not in app.config:
@@ -38,5 +42,10 @@ class Edits(object):
 
         app.jinja_env.add_extension('flask.ext.edits.EditableExtension')
         app.jinja_env.edits = _db
+        app.jinja_env.edits_preview = app.config['EDITS_PREVIEW']
+        app.jinja_env.edits_cache = copy_cache(app.jinja_env.cache)
+
+        if app.config['EDITS_PREVIEW']:
+            app.jinja_env.cache = None
 
         app.register_blueprint(edits, url_prefix=app.config['EDITS_URL'])

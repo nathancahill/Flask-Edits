@@ -33,6 +33,12 @@ class EditableExtension(Extension):
         _db[parser.name][key].setdefault('edited', None)
 
         if _db[parser.name][key].get('edited', None):
-            return Output([TemplateData(_db[parser.name][key]['edited'])])
+            if self.environment.edits_preview:
+                if self.environment.globals['request'].args.get('preview'):
+                    return Output([TemplateData(_db[parser.name][key]['edited'])])
+                else:
+                    return section
+            else:
+                return Output([TemplateData(_db[parser.name][key]['edited'])])
 
         return section
