@@ -56,13 +56,14 @@
             <p class="lead">Editing {{ page }}</p>
             <form method="POST" action="{{ url_for('edits.save') }}" onsubmit="save()">
                 <input type="hidden" name="page" value="{{ page }}" />
-                {% for hash, region in edits[page].iteritems() %}
-                  <div class="form-group">
+                {% for key, section in edits[page].iteritems() %}
+                  <small><strong>{{ key|upper }}</strong></small>
+                  <div class="form-group" style="margin-top: 5px;">
                     {% if summernote %}
-                      <div class="summernote" id="{{ hash }}">{% if region.edited is none %}{{ region.original }}{% else %}{{ region.edited }}{% endif %}</div>
-                      <input type="hidden" name="{{ hash }}" value="" />
+                      <div class="summernote" id="{{ key }}">{% if section.edited is none %}{{ section.original }}{% else %}{{ section.edited }}{% endif %}</div>
+                      <input type="hidden" name="{{ key }}" value="" />
                     {% else %}
-                      <textarea class="form-control" rows="4" name="{{ hash }}" oninput="unsaved = true" onpropertychange="unsaved = true">{% if region.edited is none %}{{ region.original }}{% else %}{{ region.edited }}{% endif %}</textarea>
+                      <textarea class="form-control" rows="4" name="{{ key }}" oninput="unsaved = true" onpropertychange="unsaved = true">{% if section.edited is none %}{{ section.original }}{% else %}{{ section.edited }}{% endif %}</textarea>
                     {% endif %}
                   </div>
                 {% endfor %}

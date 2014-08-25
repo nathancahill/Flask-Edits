@@ -17,11 +17,11 @@ class EditableExtension(Extension):
         # Skip begining node
         parser.stream.next()
 
+        # Get section key
+        key = parser.parse_expression().value
+
         # Read editable section
         section = parser.parse_statements(['name:endeditable'], drop_needle=True)
-
-        # Generate section key
-        key = hashlib.md5(str(section)).hexdigest()[:16]
 
         # Render original section contents
         compiled = self.environment.compile(Template(section), '', '')
