@@ -10,7 +10,7 @@ Enter **Flask-Edits**. Mark sections of your templates with
 ``{% editable %}`` and their content is exposed in a slick admin panel.
 Never worry about tweaking copy again.
 
-.. figure:: http://i.imgur.com/7vCTJSN.png
+.. figure:: http://i.imgur.com/kgAlUAV.png
    :alt: Screenshot
 
    Screenshot
