@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Flask-Edits</title>
+
+    <link href="{{ url_for('edits.static', filename='bootstrap/css/bootstrap.min.css')}}" rel="stylesheet" />
+    <link href="{{ url_for('edits.static', filename='bootstrap/css/navbar.css')}}" rel="stylesheet" />
+
+    {% if summernote %}
+    <link href="{{ url_for('edits.static', filename='summernote/summernote.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('edits.static', filename='summernote/summernote-bs3.css') }}" rel="stylesheet" />
+    <link href="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/codemirror.min.css" rel="stylesheet" />
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
+    {% endif %}
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="#">Flask-Edits</a>
+          </div>
+        </div>
+      </div>
+
+      {% if edits|length %}
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="panel panel-default">
+            <div class="panel-heading">Editable Pages</div>
+            <div class="list-group">
+              {% for page, regions in edits.iteritems() %}
+              <a href="{{ url_for('edits.index', page=page) }}" class="list-group-item">
+                <span class="badge">{{ regions.keys()|length }}</span>
+                {{ page }}
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-8">
+            <p class="lead">Editing {{ page }}</p>
+            <form method="POST" action="{{ url_for('edits.save') }}" onsubmit="save()">
+                <input type="hidden" name="page" value="{{ page }}" />
+                {% for hash, region in edits[page].iteritems() %}
+                  <div class="form-group">
+                    {% if summernote %}
+                      <div class="summernote" id="{{ hash }}">{% if region.edited is none %}{{ region.original }}{% else %}{{ region.edited }}{% endif %}</div>
+                      <input type="hidden" name="{{ hash }}" value="" />
+                    {% else %}
+                      <textarea class="form-control" rows="4" name="{{ hash }}" oninput="unsaved = true" onpropertychange="unsaved = true">{% if region.edited is none %}{{ region.original }}{% else %}{{ region.edited }}{% endif %}</textarea>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+                <input type="submit" value="Save Page" class="btn btn-primary" />
+            </form>
+        </div>
+      </div>
+      {% else %}
+      <div class="row">
+        <div class="col-sm-12" style="text-align: center; padding-top: 40px;">
+          <i class="glyphicon glyphicon-warning-sign" style="font-size: 100px; color: #eee;"></i>
+          <p class="lead" style="width: 50%; margin: 0 auto; padding-top: 40px;">No editable pages loaded yet. After adding editable regions to your templates, visit each page in your browser to load it.</p>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </body>
+
+  {% if summernote %}
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.9.1.min.js"></script> 
+  <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script> 
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/codemirror.min.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/mode/xml/xml.min.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/2.36.0/formatting.min.js"></script>
+  <script type="text/javascript" src="{{ url_for('edits.static', filename='summernote/summernote.min.js') }}"></script>
+  {% endif %}
+
+  <script>
+    {% if summernote %}
+    $(document).ready(function() {
+      $('.summernote').summernote({
+        height: 100,
+        toolbar: [
+          ['style', ['bold', 'italic', 'underline', 'clear']],
+          ['insert', ['link', 'hr']],
+          ['layount', ['ul', 'ol']],
+          ['misc', ['codeview']]
+        ],
+        onChange: function() {
+          window.unsaved = true;
+        }
+      });
+    });
+    {% endif %}
+
+    function save() {
+      {% if summernote %}
+      $('.summernote').each(function() {
+        $('input[name=' + $(this).attr('id') + ']').val($(this).code());
+      });
+      {% endif %}
+
+      unsaved = false;
+    }
+
+    var unsaved = false;
+
+    function unloadPage() { 
+        if (unsaved) {
+            return "You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?";
+        }
+    }
+
+    window.onbeforeunload = unloadPage;
+  </script>
+</html>
